@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Group for Super Admin: Access to all records -->
+    <record id="group_super_admin" model="res.groups">
+        <field name="name">Super Admin: All Records</field>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <!-- Group for Regular User: Access to own records only -->
+    <record id="group_user_own_records" model="res.groups">
+        <field name="name">User: Own Records</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Group for Admin: Access to own and child user records -->
+    <record id="group_admin" model="res.groups">
+        <field name="name">Admin: Own and Child Records</field>
+        <field name="implied_ids" eval="[(4, ref('group_user_own_records'))]"/>
+    </record>
+
+    
+
+    <!-- Rule for Super Admin: Access to all contacts -->
+    <record id="rule_super_admin_all_contacts" model="ir.rule">
+        <field name="name">Super Admin: All Contacts</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_super_admin'))]"/>
+        <field eval="1" name="perm_read"/>
+        <field eval="1" name="perm_write"/>
+        <field eval="1" name="perm_unlink"/>
+        <field eval="1" name="perm_create"/>
+    </record>
+
+    <!-- Rule for Admin: Access to own and child contacts -->
+    <record id="rule_admin_own_child_contacts" model="ir.rule">
+        <field name="name">Admin: Own and Child Contacts</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">['|', ('create_uid', '=', user.id), ('create_uid.x_manager_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_admin'))]"/>
+        <field eval="1" name="perm_read"/>
+        <field eval="1" name="perm_write"/>
+        <field eval="1" name="perm_unlink"/>
+        <field eval="1" name="perm_create"/>
+    </record>
+
+
+    <!-- Rule for Admin: Access to own and child Leads -->
+    <record id="rule_admin_own_child_leads" model="ir.rule">
+        <field name="name">Admin: Own and Child Leads</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.x_manager_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_admin'))]"/>
+        <field eval="1" name="perm_read"/>
+        <field eval="1" name="perm_write"/>
+        <field eval="1" name="perm_unlink"/>
+        <field eval="1" name="perm_create"/>
+    </record>
+
+    <record id="rule_admin_own_child_orders" model="ir.rule">
+        <field name="name">Admin: Own and Child Orders</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.x_manager_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_admin'))]"/>
+        <field eval="1" name="perm_read"/>
+        <field eval="1" name="perm_write"/>
+        <field eval="1" name="perm_unlink"/>
+        <field eval="1" name="perm_create"/>
+    </record>
+
+    <!-- Rule for Regular User: Access to own contacts only -->
+    <record id="rule_user_own_contacts" model="ir.rule">
+        <field name="name">User: Own Contacts</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_user_own_records'))]"/>
+        <field eval="1" name="perm_read"/>
+        <field eval="1" name="perm_write"/>
+        <field eval="1" name="perm_unlink"/>
+        <field eval="1" name="perm_create"/>
+    </record>
+
+    <record id="group_all_contact_read_rule" model="ir.rule">
+        <field name="name">User: All Contacts Read Only</field>
+        <field name="model_id" ref="base.model_res_partner" />
+        <field name="domain_force">[('create_uid', '!=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_user_own_records'))]"/>
+        <field eval="1" name="perm_read"></field>
+        <field eval="0" name="perm_write"></field>
+        <field eval="0" name="perm_unlink"></field>
+        <field eval="0" name="perm_create"></field>
+    </record>
+
+    <record id="crm_tag_access" model="ir.model.access">
+        <field name="name">crm.tag.access</field>
+        <field name="model_id" ref="sales_team.model_crm_tag" />
+        <field name="group_id" ref='group_user_own_records'/>
+        <field eval="1" name="perm_read"/>
+        <field eval="1" name="perm_write"/>
+        <field eval="1" name="perm_unlink"/>
+        <field eval="1" name="perm_create"/>
+    </record>
+
+    <record id="crm_lead_access" model="ir.model.access">
+        <field name="name">crm.lead.access</field>
+        <field name="model_id" ref="crm.model_crm_lead" />
+        <field name="group_id" ref='group_user_own_records'/>
+        <field eval="1" name="perm_read"/>
+        <field eval="1" name="perm_write"/>
+        <field eval="1" name="perm_unlink"/>
+        <field eval="1" name="perm_create"/>
+    </record>
+
+    <record id="sale_order_access" model="ir.model.access">
+        <field name="name">sale.order.access</field>
+        <field name="model_id" ref="sale.model_sale_order" />
+        <field name="group_id" ref='group_user_own_records'/>
+        <field eval="1" name="perm_read"/>
+        <field eval="1" name="perm_write"/>
+        <field eval="1" name="perm_unlink"/>
+        <field eval="1" name="perm_create"/>
+    </record>
+
+    <record id="create_quotation_access" model="ir.model.access">
+        <field name="name">create.quotation.access</field>
+        <field name="model_id" ref="sale_crm.model_crm_quotation_partner" />
+        <field name="group_id" ref='group_user_own_records'/>
+        <field eval="1" name="perm_read"/>
+        <field eval="1" name="perm_write"/>
+        <field eval="1" name="perm_unlink"/>
+        <field eval="1" name="perm_create"/>
+    </record>
+
+</odoo>
+

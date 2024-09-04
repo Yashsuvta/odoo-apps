@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="own_contact_action" model="ir.actions.act_window">
+        <field name="name">My contacts</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('create_uid','=',uid)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new Contacts
+            </p>
+        </field>
+    </record>
+    
+    <record id="all_contact_action" model="ir.actions.act_window">
+        <field name="name">All Contacts</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">['|', ('create_uid', '=', uid), ('create_uid.x_manager_id', '=', uid)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new Contacts
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="own_lead_action">
+        <field name="name">My Leads</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">tree,kanban,graph,pivot,calendar,form,activity</field>
+        <field name="domain">['|', ('type','=','lead'), ('type','=',False)]</field>
+        <field name="search_view_id" ref="crm.view_crm_case_leads_filter"/>
+        <field name="context">{
+                'default_type':'lead',
+                'search_default_type': 'lead',
+                'search_default_to_process':1,
+            }
+        </field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a Lead
+            </p><p>
+                Leads are the qualification step before the creation of an opportunity.
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="all_lead_action">
+        <field name="name">All Leads</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">tree,kanban,graph,pivot,calendar,form,activity</field>
+        <field name="domain">['|', ('type','=','lead'), ('type','=',False)]</field>
+        <field name="search_view_id" ref="crm.view_crm_case_leads_filter"/>
+        <field name="context">{
+                'default_type':'lead',
+                'search_default_type': 'lead',
+                'search_default_to_process':1,
+            }
+        </field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a Lead
+            </p><p>
+                Leads are the qualification step before the creation of an opportunity.
+            </p>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="crm_lead_action_own_and_user_opportunity">
+        <field name="name">Pipeline</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">kanban,tree,graph,pivot,form,calendar,activity</field>
+        <field name="domain">['|','|',("type","=","opportunity"), ('user_id', '=', uid), ('user_id.x_manager_id', '=', uid)]</field>
+        <field name="context">{
+                'default_type': 'opportunity',
+                'search_default_assigned_to_me': 1
+        }</field>
+        <field name="search_view_id" ref="crm.view_crm_case_opportunities_filter"/>
+    </record>
+
+    <record model="ir.actions.act_window" id="crm_lead_action_own_opportunity">
+        <field name="name">Pipeline</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">kanban,tree,graph,pivot,form,calendar,activity</field>
+        <field name="domain">[("type", "=", "opportunity")]</field>
+        <field name="context">{
+                'default_type': 'opportunity',
+                'search_default_assigned_to_me': 1
+        }</field>
+        <field name="search_view_id" ref="crm.view_crm_case_opportunities_filter"/>
+    </record>
+
+
+<!-- Menus for CRM -->
+    <menuitem id="tis_menu" name="TIS CRM" sequence="25" />
+
+    <menuitem id="tis_opportunity_menu" sequence="3" name="My Opportunity" parent="tis_menu" action="crm_lead_action_own_opportunity" groups="group_user_own_records"/>
+
+    <menuitem id="tis_all_leads_menu" name="Leads" sequence="4" parent="tis_menu" action="own_lead_action" groups="group_user_own_records"/>
+    
+
+
+
+<!-- Menus for Contacts -->
+    <menuitem id="all_contact_menu" parent="contacts.menu_contacts" action="all_contact_action" groups="group_admin" sequence="1" />
+    <menuitem id="my_contact_menu" parent="contacts.menu_contacts" action="own_contact_action" sequence="11" />
+
+</odoo>
